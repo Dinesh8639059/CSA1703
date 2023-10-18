@@ -1,0 +1,60 @@
+class Node:
+    def __init__(self, data):
+        self.data = data
+        self.children = {}
+        self.is_leaf = True
+
+def train_decision_tree(data, target, features):
+    if not data:
+        return None
+
+    if all(target) == 1:
+        return Node(1)
+    if all(target) == 0:
+        return Node(0)
+
+    if not features:
+        return Node(max(set(target), key=target.count))
+
+    best_feature = features[0]
+    remaining_features = features[1:]
+    root = Node(best_feature)
+
+    for value in set(data[best_feature]):
+        new_data = [entry for entry in data if entry[best_feature] == value]
+        new_target = [target[i] for i in range(len(data)) if data[i][best_feature] == value]
+
+        child = train_decision_tree(new_data, new_target, remaining_features)
+        root.children[value] = child
+        root.is_leaf = False
+
+    return root
+
+def predict(root, sample):
+    if root.is_leaf:
+        return root.data
+    value = sample[root.data]
+    if value in root.children:
+        return predict(root.children[value], sample)
+    return None
+
+# Example usage
+data = [
+    [1, 1, 0],
+    [1, 0, 1],
+    [0, 1, 1],
+    [0, 0, 0]
+]
+
+target = [0, 1, 1, 0]
+
+features = [0, 1]
+
+tree = train_decision_tree(data, target, features)
+sample = [1, 0]
+prediction = predict(tree, sample)
+
+if prediction is not None:
+    print(f"The prediction for {sample} is: {prediction}")
+else:
+    print("Unable to make a prediction.")
