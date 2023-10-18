@@ -1,0 +1,106 @@
+import random
+
+# Sigmoid activation function
+def sigmoid(x):
+    return 1 / (1 + 2.71828**(-x))
+
+# Derivative of the sigmoid function
+def sigmoid_derivative(x):
+    return x * (1 - x)
+
+class NeuralNetwork:
+    def __init__(self, input_size, hidden_size, output_size):
+        self.input_size = input_size
+        self.hidden_size = hidden_size
+        self.output_size = output_size
+
+        # Initialize weights with random values
+        self.weights_input_hidden = [[random.uniform(-1, 1) for _ in range(self.hidden_size)] for _ in range(self.input_size)]
+        self.weights_hidden_output = [[random.uniform(-1, 1) for _ in range(self.output_size)] for _ in range(self.hidden_size)]
+
+        # Initialize biases
+        self.bias_hidden = [random.uniform(-1, 1) for _ in range(self.hidden_size)]
+        self.bias_output = [random.uniform(-1, 1) for _ in range(self.output_size)]
+
+    def forward(self, inputs):
+        # Calculate hidden layer input
+        hidden_input = [0] * self.hidden_size
+        for i in range(self.hidden_size):
+            for j in range(self.input_size):
+                hidden_input[i] += inputs[j] * self.weights_input_hidden[j][i]
+            hidden_input[i] += self.bias_hidden[i]
+
+        # Apply the sigmoid activation function to the hidden layer
+        hidden_output = [sigmoid(x) for x in hidden_input]
+
+        # Calculate output layer input
+        output_input = [0] * self.output_size
+        for i in range(self.output_size):
+            for j in range(self.hidden_size):
+                output_input[i] += hidden_output[j] * self.weights_hidden_output[j][i]
+            output_input[i] += self.bias_output[i]
+
+        # Apply the sigmoid activation function to the output layer
+        output = [sigmoid(x) for x in output_input]
+
+        return hidden_input, hidden_output, output_input, output
+
+    def backward(self, inputs, target, hidden_input, hidden_output, output_input, output, learning_rate):
+        # Calculate the error in the output layer
+        output_error = [target[i] - output[i] for i in range(self.output_size)]
+
+        # Calculate the delta in the output layer
+        output_delta = [output_error[i] * sigmoid_derivative(output[i]) for i in range(self.output_size)]
+
+        # Calculate the error in the hidden layer
+        hidden_error = [0] * self.hidden_size
+        for i in range(self.hidden_size):
+            for j in range(self.output_size):
+                hidden_error[i] += output_delta[j] * self.weights_hidden_output[i][j]
+
+        # Calculate the delta in the hidden layer
+        hidden_delta = [hidden_error[i] * sigmoid_derivative(hidden_output[i]) for i in range(self.hidden_size)]
+
+        # Update weights and biases
+        for i in range(self.output_size):
+            for j in range(self.hidden_size):
+                self.weights_hidden_output[j][i] += learning_rate * output_delta[i] * hidden_output[j]
+            self.bias_output[i] += learning_rate * output_delta[i]
+
+        for i in range(self.hidden_size):
+            for j in range(self.input_size):
+                self.weights_input_hidden[j][i] += learning_rate * hidden_delta[i] * inputs[j]
+            self.bias_hidden[i] += learning_rate * hidden_delta[i]
+
+    def train(self, inputs, targets, learning_rate, epochs):
+        for _ in range(epochs):
+            for i in range(len(inputs)):
+                hidden_input, hidden_output, output_input, output = self.forward(inputs[i])
+                self.backward(inputs[i], targets[i], hidden_input, hidden_output, output_input, output, learning_rate)
+
+    def predict(self, inputs):
+        predictions = []
+        for i in range(len(inputs)):
+            _, _, _, output = self.forward(inputs[i])
+            predictions.append(output)
+        return predictions
+
+# Sample dataset for XOR problem
+X = [[0, 0], [0, 1], [1, 0], [1, 1]]
+y = [[0], [1], [1], [0]]
+
+# Create and train the neural network
+input_size = 2
+hidden_size = 4
+output_size = 1
+learning_rate = 0.1
+epochs = 10000
+
+model = NeuralNetwork(input_size, hidden_size, output_size)
+model.train(X, y, learning_rate, epochs)
+
+# Make predictions
+predictions = model.predict(X)
+print("Predictions:")
+for i in range(len(X)):
+    print(f"Input: {X[i]}, Predicted Output: {predictions[i][0]:.4f}")
