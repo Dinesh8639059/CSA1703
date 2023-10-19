@@ -1,0 +1,21 @@
+% Define some rules
+
+% Rule 1: If the grass is wet, then it's raining.
+raining :- wet_grass.
+
+% Rule 2: If John and Mary are working hard, then they are studying.
+studying(john) :- working_hard.
+studying(mary) :- working_hard.
+
+% Define initial facts
+wet_grass.
+working_hard.
+
+% Backward chaining for a specific goal
+can_reach_goal('The grass is wet') :- wet_grass.
+can_reach_goal('John and Mary are working hard') :- working_hard.
+
+% Example queries to check if goals can be reached
+?- can_reach_goal('The grass is wet').
+
+?- can_reach_goal('John and Mary are working hard').
