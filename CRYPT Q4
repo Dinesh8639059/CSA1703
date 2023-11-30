@@ -1,0 +1,51 @@
+from itertools import permutations
+
+def solve_cryptarithmetic(puzzle):
+    words = puzzle.split()
+    unique_letters = set("".join(words))
+
+    if len(unique_letters) > 10:
+        return None  # There are more than 10 unique letters; no solution is possible
+
+    for perm in permutations("0123456789", len(unique_letters)):
+        digit_mapping = dict(zip(unique_letters, perm))
+
+        digit_puzzle = puzzle
+        for letter, digit in digit_mapping.items():
+            digit_puzzle = digit_puzzle.replace(letter, digit)
+
+        if is_valid(digit_puzzle, words):
+            return digit_puzzle
+
+    return None
+
+def is_valid(digit_puzzle, words):
+    if any(word[0] in digit_puzzle[0] for word in words):
+        return False
+
+    try:
+        return eval(digit_puzzle.replace("==", "!=").replace(" ", ""))
+    except ZeroDivisionError:
+        return False
+
+def main():
+    print("Enter the Cryptarithmetic puzzle, one line at a time. Enter a blank line to finish.")
+    puzzle_lines = []
+    while True:
+        line = input()
+        if not line:
+            break
+        puzzle_lines.append(line)
+
+    puzzle = ' '.join(puzzle_lines)
+
+    solution = solve_cryptarithmetic(puzzle)
+
+    if solution:
+        print("Solution found:")
+        print(solution)
+    else:
+        print("No solution found.")
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,58 @@
+import itertools
+def calculate_distance(city1, city2):
+    return abs(city1[0] - city2[0]) + abs(city1[1] - city2[1])
+def total_distance(path, cities):
+    total = 0
+    for i in range(len(path) - 1):
+        total += calculate_distance(cities[path[i]], cities[path[i+1]])
+    total += calculate_distance(cities[path[-1]], cities[path[0]])
+    return total
+def brute_force_tsp(cities):
+    num_cities = len(cities)
+    min_distance = float('inf')
+    best_path = []
+    for perm in itertools.permutations(range(num_cities)):
+        distance = total_distance(perm, cities)
+        if distance < min_distance:
+            min_distance = distance
+            best_path = perm
+    return best_path, min_distance
+def main():
+    num_cities = int(input("Enter the number of cities: "))
+    cities = []
+    for i in range(num_cities):
+        x, y = map(int, input(f"Enter the coordinates of city {i+1} (x y): ").split())
+        cities.append((x, y))
+    best_path, min_distance = brute_force_tsp(cities)
+    print("Best path:", "->".join(str(city) for city in best_path))
+    print("Minimum distance:", min_distance)
+import itertools
+def calculate_distance(city1, city2):
+    return abs(city1[0] - city2[0]) + abs(city1[1] - city2[1])
+def total_distance(path, cities):
+    total = 0
+    for i in range(len(path) - 1):
+        total += calculate_distance(cities[path[i]], cities[path[i+1]])
+    total += calculate_distance(cities[path[-1]], cities[path[0]])
+    return total
+def brute_force_tsp(cities):
+    num_cities = len(cities)
+    min_distance = float('inf')
+    best_path = []
+    for perm in itertools.permutations(range(num_cities)):
+        distance = total_distance(perm, cities)
+        if distance < min_distance:
+            min_distance = distance
+            best_path = perm
+    return best_path, min_distance
+def main():
+    num_cities = int(input("Enter the number of cities: "))
+    cities = []
+    for i in range(num_cities):
+        x, y = map(int, input(f"Enter the coordinates of city {i+1} (x y): ").split())
+        cities.append((x, y))
+    best_path, min_distance = brute_force_tsp(cities)
+    print("Best path:", "->".join(str(city) for city in best_path))
+    print("Minimum distance:", min_distance)
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,56 @@
+from collections import deque
+def is_valid(state):
+    m, c, b = state
+    if m < 0 or m > 3 or c < 0 or c > 3 or (b != 0 and b != 1):
+        return False
+    if m < c and m > 0:
+        return False
+    if 3 - m < 3 - c and 3 - m > 0:
+        return False
+    return True
+def generate_states(state):
+    m, c, b = state
+    states = []
+    if b == 1:
+        for move_m in range(4):
+            for move_c in range(4):
+                if move_m + move_c >= 1 and move_m + move_c <= 2:
+                    new_state = (m - move_m, c - move_c, 0)
+                    if is_valid(new_state):
+                        states.append(new_state)
+    else:
+        for move_m in range(4):
+            for move_c in range(4):
+                if move_m + move_c >= 1 and move_m + move_c <= 2:
+                    new_state = (m + move_m, c + move_c, 1)
+                    if is_valid(new_state):
+                        states.append(new_state)
+    return states
+def bfs(initial_state, goal_state):
+    visited = set()
+    queue = deque([(initial_state, [])])
+    while queue:
+        current_state, path = queue.popleft()
+        if current_state == goal_state:
+            return path
+        if current_state not in visited:
+            visited.add(current_state)
+            next_states = generate_states(current_state)
+            for state in next_states:
+                if state not in visited:
+                    queue.append((state, path + [current_state]))
+    return None
+def main():
+    print("Enter the number of missionaries, cannibals, and the initial boat location (0 or 1) separated by spaces:")
+    m, c, b = map(int, input().split())
+    initial_state = (m, c, b)
+    goal_state = (0, 0, 0)
+    solution = bfs(initial_state, goal_state)
+    if solution:
+        print("Solution found:")
+        for i, state in enumerate(solution, start=1):
+            print(f"Step {i}: {state}")
+    else:
+        print("No solution found.")
+if __name__ == "__main__":
+    main()

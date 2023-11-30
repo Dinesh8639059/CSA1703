@@ -1,0 +1,18 @@
+% Define symptoms and their possible conditions
+symptom(john, fever).
+symptom(john, cough).
+symptom(mary, headache).
+symptom(mary, fatigue).
+symptom(mary, fever).
+
+% Define rules for diagnosing conditions
+diagnose_patient(john, 'Common Cold') :-
+    symptom(john, fever),
+    symptom(john, cough).
+
+diagnose_patient(mary, 'Flu') :-
+    symptom(mary, headache),
+    symptom(mary, fatigue).
+
+diagnose_patient(_, 'Unknown').
+

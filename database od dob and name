@@ -1,0 +1,11 @@
+% Define facts to represent the database.
+person(john, '1990-03-15').
+person(susan, '1985-07-20').
+person(mike, '1995-11-05').
+person(lisa, '2000-01-10').
+person(david, '1978-09-25').
+
+% Define a predicate to print the birthday of a person.
+print_birthday(Name) :-
+    person(Name, DOB),
+    write(Name), write("'s birthday is on "), write(DOB), nl.
